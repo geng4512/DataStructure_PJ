@@ -1,7 +1,8 @@
 cmake_minimum_required(VERSION 3.10)
 project(PJ)
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_COMPILER "g++")
+set(CMAKE_CXX_FLAGS "-std=c++14 -O2")
 
 include_directories(yourcode)
 
