@@ -9,6 +9,10 @@ struct Point {
 	inline Point operator + (Point rhs) const {
 		return Point(a + rhs.a, b + rhs.b);
 	}
+	Point & operator [] (int x) const {
+		if(x == 0) return x;
+		return y;
+	}
 };
 
 #endif

@@ -19,4 +19,8 @@ add_executable(main
         yourcode/submit-5MixQueryPolygon.h
         yourcode/submit-6MixQuery.cpp
         yourcode/submit-6MixQuery.h
+        yourcode/Geo.cpp
+        yourcode/Geo.h
+        yourcode/KDTree.h
+        yourcode/KDTree.cpp
         main.cpp)
