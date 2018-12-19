@@ -48,7 +48,8 @@ KDtreeNode * KDTree::newNode() {
 		bin.pop();
 		return tmp;
 	}
-	return &(KDtreeNodePool[NodeCnt ++]);
+	if(NodeCnt < KDTREENODE_SIZE) return &(KDtreeNodePool[NodeCnt ++]);
+	return new KDtreeNode();
 }
 
 void KDTree::Travel(KDtreeNode * x) {
@@ -58,7 +59,7 @@ void KDTree::Travel(KDtreeNode * x) {
 	bin.push(x);
 	x -> clear();
 	if(!x -> del)
-		ReBuildPool[++ ReBuildCnt] = Point(x -> x[0], x -> x[1]);
+		ReBuildPool[++ ReBuildCnt] = make_pair(Point(x -> x[0], x -> x[1]), x -> id);
 }
 
 
@@ -79,4 +80,67 @@ KDtreeNode *KDTree::Build(int l, int r, int Dim) {
 void KDTree::ReBuild(KDtreeNode * x, int Dim) {
 	Travel(x);
 	x = Build(1, ReBuildCnt, Dim);
+}
+
+void KDTree::Insert(KDtreeNode * x, KDtreeNode v, int Dim) {
+	if(x == NULL) {
+		x = newNode();
+		*x = v;
+		return;
+	}
+	if(v.x[Dim] < x -> x[Dim]) Insert(x -> lc, v, Dim ^ 1);
+	else Insert(x -> rc, v, Dim ^ 1);
+	x -> pushup();
+	if(x -> isBad()) ReBuildNode = x, ReBuildDim = Dim;
+	return;
+}
+
+void KDTree::Insert(Point v, int id) {
+	ReBuildNode = NULL;
+	KDtreeNode V(v);
+	Id2Cnt[id] = ++ Cnt;
+	MyPoint.push_back(v);
+	V.id = id;
+	Insert(Root, V, 0);
+	if(ReBuildNode != NULL) ReBuild(ReBuildNode, ReBuildDim);
+}
+
+void KDTree::GetNode(KDtreeNode * x) {
+	if(x == NULL) return;
+	if(!x -> del) Ans.push_back(x -> id);
+	GetNode(x -> lc);
+	GetNode(x -> rc);
+}
+
+void KDTree::Find(KDtreeNode * x, vector<pair<double, double>> &Poly) {
+	int State = RectangleInPoly(x -> mx, x -> mn, vector<pair<double, double>> &Poly);
+	//State = 1 : The rectangle is fully in the polygon;
+	//State = 2 : Some part of the rectangle is in the polyon;
+	//State = 3 : The rectangle is out of the polygon;
+	if(State == 1) {
+		GetNode();
+	}
+}
+
+void KDTree::Erase(KDtreeNode * x, Point v, int id, int Dim) {
+	if(x == NULL) return;
+	if(x -> id == id) {
+		x -> del = 1;
+		return;
+	}
+	if(v[Dim] < x -> x[Dim]) Erase(x -> lc, v, id, Dim ^ 1);
+	else Erase(x -> rc, v, id, Dim ^ 1);
+}
+
+void KDTree::Erase(int id) {
+	int cnt = Id2Cnt[id];
+	if(cnt == 0) return;
+	-- cnt;
+	//Avoid illegal input.
+	Erase(Root, MyPoint[cnt], id, 0);
+}
+
+void KDTree::Find(vector<pair<double, double>> &Poly) {
+	Ans.clear();
+	Find(Root, Poly);
 }

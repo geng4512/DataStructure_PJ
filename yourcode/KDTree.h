@@ -30,12 +30,16 @@ struct KDTree {
 	KDtreeNode *Root;
 	KDtreeNode *ReBuildNode;
 	KDtreeNode KDtreeNodePool[KDTREENODE_SIZE];
-	Point ReBuildPool[KDTREENODE_SIZE];
+	pair<Point, id> ReBuildPool[KDTREENODE_SIZE];
+	vector<int> Ans;
+	hashmap<int, int> Id2Cnt;
+	vector<Point> MyPoint;
 
-	int NodeCnt, ReBuildCnt, ReBuildDim;
+	int NodeCnt, ReBuildCnt, ReBuildDim, Cnt;
 
 	KDTree() {
-		NodeCnt = ReBuildCnt = 0;
+		Id2Cnt.clear();
+		NodeCnt = ReBuildCnt = Cnt = 0;
 		Root = NULL;
 	}
 
@@ -43,11 +47,24 @@ struct KDTree {
 
 	KDtreeNode *newNode();
 
-	KDtreeNode *Build(int l, int r, int D);
+	KDtreeNode *Build(int l, int r, int Dim);
 
 	void Travel(KDtreeNode * x);
 
 	void ReBuild(KDtreeNode * x, int Dim);
 
+	void Insert(KDtreeNode * x, KDtreeNode v, int Dim);
+
+	void Insert(Point v);
+
+	void GetNode(KDtreeNode * x);
+
+	void Find(KDtreeNode * x, vector<pair<double, double>> &Poly);
+
+	void Find(vector<pair<double, double>> &Poly);
+
+	void Erase(KDtreeNode * x, Point v, int id);
+
+	void Erase(int id);
 }
 #endif
